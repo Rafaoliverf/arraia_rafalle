@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Seu Convite Especial</title>
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+            /* Permite a rolagem da página inteira caso o convite seja maior que a tela */
+            overflow-y: auto; 
+        }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        .wrapper {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* --- CORPO DO ENVELOPE (Mantido o tamanho original) --- */
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #2c3e50;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 0 0 10px 10px;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* Aba superior original */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #1a252f;
+            transform-origin: top;
+            transition: transform 0.4s ease-in-out, z-index 0.2s;
+            z-index: 5;
+        }
+
+        /* Bolsão interno original */
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #f39c12;
+            border-right: 150px solid #f39c12;
+            border-bottom: 100px solid #d35400;
+            z-index: 4;
+        }
+
+        /* --- CONVITE INTERNO (AMPLIADO E SEM SCROLL) --- */
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            width: 90%; /* Ajusta-se bem à largura interna antes de abrir */
+            height: auto; /* Altura automática para não cortar nada */
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 3; 
+            
+            /* Estado inicial escondido dentro do envelope */
+            transform: translateY(105%) scale(0.5); 
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            
+            /* Remove completamente qualquer barra de rolagem interna */
+            overflow: hidden; 
+        }
+
+        /* Imagem do Convite Grande e Completa */
+        .letter-img {
+            width: 100%;
+            height: auto; /* Mostra a foto inteira sem cortar */
+            display: block;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .letter h1 {
+            font-size: 1.4rem;
+            color: #d35400;
+            margin-bottom: 12px;
+            font-family: 'Georgia', serif;
+        }
+
+        .letter p {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        /* Link do Maps Estilizado */
+        .maps-link {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .maps-link:hover {
+            background-color: #219653;
+        }
+
+        /* --- BOTÃO DE INTERAÇÃO --- */
+        .open-btn {
+            position: absolute;
+            bottom: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 30px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        /* --- CONFIGURAÇÕES DE ABERTURA --- */
+        .envelope-wrapper.open .envelope {
+            overflow: visible;
+        }
+
+        .envelope-wrapper.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* Quando aberto: o convite ganha tamanho real (scale 1.2 expande para fora do envelope) */
+        .envelope-wrapper.open .letter {
+            position: relative; /* Muda para se libertar dos limites do envelope */
+            width: 350px; /* Alarga o convite para fora do envelope */
+            left: 50%;
+            transform: translate(-50%, -240px) scale(1.1); /* Sobe e expande lindamente */
+            opacity: 1;
+            z-index: 100;
+        }
+
+        .envelope-wrapper.open .open-btn {
+            background-color: #c0392b;
+            /* Desloca o botão para baixo do convite expandido */
+            transform: translateX(-50%) translateY(260px); 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="envelope-wrapper" id="invitationContainer">
+            
+            <div class="flap"></div>
+            
+            <div class="envelope">
+                <div class="pocket"></div>
+                
+                <div class="letter">
+                    <img src="ArraiaRafaelle.png" alt="Arraiá da Rafaelle" class="letter-img">
+                    
+                    <h1>Você foi Convidado!</h1>
+                    <p>Prepare o seu traje caipira e venha curtir essa festança comigo!</p>
+                    
+                    <p><strong>📅 Data:</strong> 03 de Julho de 2026</p>
+                    <p><strong>⏰ Horário:</strong> 19 Horas</p>
+                    
+                    <p><strong>📍 Local: <p style="font-size: 0.85rem; color: #666;">Rua Fauna, Nº 05 - Comunidade dos Lopes</p>
+                    
+                    <a href="https://www.google.com/maps/place/20%C2%B004'56.4%22S+44%C2%B057'45.8%22W/@-20.0825297,-44.9635285,18z/data=!4m4!3m3!8m2!3d-20.0823333!4d-44.9627222?entry=ttu&g_ep=EgoyMDI2MDYwOS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="maps-link" id="mapsLink">
+                        📍 Clique para abrir a localização
+                    </a>
+                    
+                    <p style="margin-top: 10px; font-weight: bold; color: #d35400; font-size: 0.95rem;">
+                        ⚠️ Obs: Traga o que for beber!
+                    </p>
+                </div>
+            </div>
+            
+            <button class="open-btn" id="actionBtn">Tocar para Abrir</button>
+            
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('invitationContainer');
+        const btn = document.getElementById('actionBtn');
+        const mapsLink = document.getElementById('mapsLink');
+
+        function toggleEnvelope(e) {
+            // Se clicar no link do mapa, não fecha o convite
+            if (e.target === mapsLink) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation(); 
+            
+            const isOpen = container.classList.toggle('open');
+            
+            if (isOpen) {
+                btn.textContent = "Tocar para Fechar";
+            } else {
+                btn.textContent = "Tocar para Abrir";
+            }
+        }
+
+        btn.addEventListener('click', toggleEnvelope);
+        btn.addEventListener('touchstart', toggleEnvelope, { passive: false });
+
+        container.addEventListener('click', toggleEnvelope);
+        container.addEventListener('touchstart', toggleEnvelope, { passive: false });
+    </script>
+</body>
+</html>
