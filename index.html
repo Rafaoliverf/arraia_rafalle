@@ -20,19 +20,24 @@
             min-height: 100vh;
             background: linear-gradient(135deg, #1d2671 0%, #c33764 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 40px 20px;
-            /* Permite a rolagem da página inteira caso o convite seja maior que a tela */
+            padding: 20px;
+            /* Permite a rolagem da página inteira de forma suave caso a tela seja muito pequena */
             overflow-y: auto; 
         }
 
         /* --- CONTAINER PRINCIPAL --- */
         .wrapper {
             position: relative;
-            width: 300px;
+            width: 100%;
+            max-width: 300px; /* Mantém o envelope compacto e idêntico ao original */
             height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* Espaço superior de segurança para a carta subir no mobile sem sumir do topo */
+            margin-top: 140px; 
+            margin-bottom: 100px;
+            transition: margin 0.4s ease;
         }
 
         .envelope-wrapper {
@@ -42,7 +47,7 @@
             cursor: pointer;
         }
 
-        /* --- CORPO DO ENVELOPE (Mantido o tamanho original) --- */
+        /* --- CORPO DO ENVELOPE --- */
         .envelope {
             position: absolute;
             width: 100%;
@@ -82,64 +87,66 @@
             z-index: 4;
         }
 
-        /* --- CONVITE INTERNO (AMPLIADO E SEM SCROLL) --- */
+        /* --- CONVITE INTERNO (RESPONSIVO E SEM SCROLL INTERNO) --- */
         .letter {
             position: absolute;
             bottom: 10px;
             left: 5%;
-            width: 90%; /* Ajusta-se bem à largura interna antes de abrir */
-            height: auto; /* Altura automática para não cortar nada */
+            width: 90%; 
+            height: auto; 
             background-color: #ffffff;
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 3; 
             
-            /* Estado inicial escondido dentro do envelope */
-            transform: translateY(105%) scale(0.5); 
+            /* Estado inicial guardado e comprimido */
+            transform: translateY(105%) scale(0.6); 
             opacity: 0;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-            
-            /* Remove completamente qualquer barra de rolagem interna */
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, width 0.4s ease;
             overflow: hidden; 
         }
 
-        /* Imagem do Convite Grande e Completa */
+        /* Imagem do Convite Flexível */
         .letter-img {
             width: 100%;
-            height: auto; /* Mostra a foto inteira sem cortar */
+            height: auto;
+            max-height: 240px;
+            object-fit: contain;
             display: block;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .letter h1 {
-            font-size: 1.4rem;
+            font-size: clamp(1.1rem, 4vw, 1.4rem); /* Ajusta o tamanho da fonte baseado na tela */
             color: #d35400;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             font-family: 'Georgia', serif;
         }
 
         .letter p {
-            font-size: 0.95rem;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
             color: #333;
             line-height: 1.5;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        /* Link do Maps Estilizado */
+        /* Link do Maps Responsivo */
         .maps-link {
             display: inline-block;
-            margin: 10px 0;
-            padding: 10px 20px;
+            margin: 8px 0;
+            padding: 10px 18px;
             background-color: #27ae60;
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
             font-weight: bold;
             transition: background 0.2s;
+            width: 100%;
+            max-width: 260px;
         }
         
         .maps-link:hover {
@@ -149,7 +156,7 @@
         /* --- BOTÃO DE INTERAÇÃO --- */
         .open-btn {
             position: absolute;
-            bottom: -70px;
+            bottom: -65px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 30px;
@@ -157,7 +164,7 @@
             color: white;
             border: none;
             border-radius: 25px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -176,20 +183,32 @@
             z-index: 1;
         }
 
-        /* Quando aberto: o convite ganha tamanho real (scale 1.2 expande para fora do envelope) */
+        /* EFEITO RESPONSIVO: Abre proporcional ao tamanho do dispositivo */
         .envelope-wrapper.open .letter {
-            position: relative; /* Muda para se libertar dos limites do envelope */
-            width: 350px; /* Alarga o convite para fora do envelope */
+            position: relative; 
+            width: 92vw; /* Usa quase toda a largura da tela no celular */
+            max-width: 370px; /* Impede que fique gigante ou esticado no computador */
             left: 50%;
-            transform: translate(-50%, -240px) scale(1.1); /* Sobe e expande lindamente */
+            /* Desloca para cima centralizando perfeitamente sem quebras de topo */
+            transform: translate(-50%, -245px) scale(1); 
             opacity: 1;
             z-index: 100;
         }
 
         .envelope-wrapper.open .open-btn {
             background-color: #c0392b;
-            /* Desloca o botão para baixo do convite expandido */
-            transform: translateX(-50%) translateY(260px); 
+            /* Empurra o botão dinamicamente para baixo do bloco da carta */
+            transform: translateX(-50%) translateY(270px); 
+        }
+
+        /* Ajuste fino focado em telas bem pequenas (celulares compactos) */
+        @media (max-width: 360px) {
+            .wrapper {
+                margin-top: 160px;
+            }
+            .envelope-wrapper.open .letter {
+                transform: translate(-50%, -265px) scale(0.95);
+            }
         }
     </style>
 </head>
@@ -212,9 +231,10 @@
                     <p><strong>📅 Data:</strong> 03 de Julho de 2026</p>
                     <p><strong>⏰ Horário:</strong> 19 Horas</p>
                     
-                    <p><strong>📍 Local: <p style="font-size: 0.85rem; color: #666;">Rua Fauna, Nº 05 - Comunidade dos Lopes</p>
+                    <p><strong>📍 Local:</strong></p>
+                    <p style="font-size: 0.85rem; color: #666; margin-top: -4px; margin-bottom: 6px;">Rua Fauna, Nº 05 - Comunidade dos Lopes</p>
                     
-                    <a href="https://www.google.com/maps/place/20%C2%B004'56.4%22S+44%C2%B057'45.8%22W/@-20.0825297,-44.9635285,18z/data=!4m4!3m3!8m2!3d-20.0823333!4d-44.9627222?entry=ttu&g_ep=EgoyMDI2MDYwOS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="maps-link" id="mapsLink">
+                    <a href="https://maps.app.goo.gl/8uD9Aya22xywKocS6" target="_blank" class="maps-link" id="mapsLink">
                         📍 Clique para abrir a localização
                     </a>
                     
@@ -235,7 +255,6 @@
         const mapsLink = document.getElementById('mapsLink');
 
         function toggleEnvelope(e) {
-            // Se clicar no link do mapa, não fecha o convite
             if (e.target === mapsLink) {
                 return;
             }
